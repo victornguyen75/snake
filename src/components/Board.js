@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { LinkedListNode, SinglyLinkedList } from "./LinkedList";
-import { useInterval, randomIntFromInterval } from "../lib/utils";
+import {
+  useInterval,
+  randomIntFromInterval,
+  reverseLinkedList,
+} from "../lib/utils";
 import "./Board.css";
 
 const BOARD_SIZE = 10;
+const PROBABILITY_OF_DIRECTION_REVERSAL_FOOD = 0.3;
 const DIRECTION = {
   UP: "UP",
   RIGHT: "RIGHT",
@@ -23,6 +28,9 @@ const Board = () => {
   // Set the food 5 cells away from the starting point of the snake
   const [foodCell, setFoodCell] = useState(snake.head.value.cell + 5);
   const [direction, setDirection] = useState(DIRECTION.RIGHT);
+  const [foodShouldReverseDirection, setFoodShouldReverseDirection] = useState(
+    false
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
@@ -95,7 +103,7 @@ const Board = () => {
     if (foodConsumed) {
       // This function mutates the newSnakeCells
       growSnake(newSnakeCells);
-      // if (foodShouldReverseDirection) reverseSnake();
+      if (foodShouldReverseDirection) reverseSnake();
       handleFoodConsumption(newSnakeCells);
     }
 
@@ -122,6 +130,19 @@ const Board = () => {
     newSnakeCells.add(newTailCell);
   };
 
+  const reverseSnake = () => {
+    const tailNextNodeDirection = getNextNodeDirection(snake.tail, direction);
+    const newDirection = getOppositeDirection(tailNextNodeDirection);
+    setDirection(newDirection);
+
+    // The tail of the snake is really the head of the linked list, which
+    // is why we have to pass the snake's tail to `reverseLinkedList`.
+    reverseLinkedList(snake.tail);
+    const snakeHead = snake.head;
+    snake.head = snake.tail;
+    snake.tail = snakeHead;
+  };
+
   const handleFoodConsumption = (newSnakeCells) => {
     const maxPossibleCellValue = BOARD_SIZE * BOARD_SIZE;
     let nextFoodCell;
@@ -136,11 +157,11 @@ const Board = () => {
       break;
     }
 
-    // const nextFoodShouldReverseDirection =
-    // Math.random() < PROBABILITY_OF_DIRECTION_REVERSAL_FOOD;
+    const nextFoodShouldReverseDirection =
+      Math.random() < PROBABILITY_OF_DIRECTION_REVERSAL_FOOD;
 
     setFoodCell(nextFoodCell);
-    // setFoodShouldReverseDirection(nextFoodShouldReverseDirection);
+    setFoodShouldReverseDirection(nextFoodShouldReverseDirection);
     // setScore(score + 1);
   };
 
@@ -157,14 +178,15 @@ const Board = () => {
     <div className="board">
       {board.map((row, rowIndex) => (
         <div key={rowIndex} className="row">
-          {row.map((cellValue, cellIndex) => (
-            <div
-              key={cellIndex}
-              className={`cell ${
-                snakeCells.has(cellValue) ? "cell-green" : ""
-              }`}
-            ></div>
-          ))}
+          {row.map((cellValue, cellIndex) => {
+            const className = getCellClassName(
+              cellValue,
+              foodCell,
+              foodShouldReverseDirection,
+              snakeCells
+            );
+            return <div key={cellIndex} className={className}></div>;
+          })}
         </div>
       ))}
     </div>
@@ -283,6 +305,25 @@ const getOppositeDirection = (direction) => {
   if (direction === DIRECTION.RIGHT) return DIRECTION.LEFT;
   if (direction === DIRECTION.DOWN) return DIRECTION.UP;
   if (direction === DIRECTION.LEFT) return DIRECTION.RIGHT;
+};
+
+const getCellClassName = (
+  cellValue,
+  foodCell,
+  foodShouldReverseDirection,
+  snakeCells
+) => {
+  let className = "cell";
+  if (cellValue === foodCell) {
+    if (foodShouldReverseDirection) {
+      className = "cell cell-purple";
+    } else {
+      className = "cell cell-red";
+    }
+  }
+  if (snakeCells.has(cellValue)) className = "cell cell-green";
+
+  return className;
 };
 
 export default Board;
