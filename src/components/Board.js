@@ -17,6 +17,7 @@ const DIRECTION = {
 };
 
 const Board = () => {
+  const [score, setScore] = useState(0);
   const [board] = useState(createBoard(BOARD_SIZE));
   const [snake, setSnake] = useState(
     new SinglyLinkedList(getStartingSnakeLLValue(board))
@@ -162,11 +163,11 @@ const Board = () => {
 
     setFoodCell(nextFoodCell);
     setFoodShouldReverseDirection(nextFoodShouldReverseDirection);
-    // setScore(score + 1);
+    setScore(score + 1);
   };
 
   const handleGameOver = () => {
-    // setScore(0);
+    setScore(0);
     const snakeLLStartingValue = getStartingSnakeLLValue(board);
     setSnake(new SinglyLinkedList(snakeLLStartingValue));
     setFoodCell(snakeLLStartingValue.cell + 5);
@@ -175,21 +176,24 @@ const Board = () => {
   };
 
   return (
-    <div className="board">
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="row">
-          {row.map((cellValue, cellIndex) => {
-            const className = getCellClassName(
-              cellValue,
-              foodCell,
-              foodShouldReverseDirection,
-              snakeCells
-            );
-            return <div key={cellIndex} className={className}></div>;
-          })}
-        </div>
-      ))}
-    </div>
+    <>
+      <h2>Score: {score}</h2>
+      <div className="board">
+        {board.map((row, rowIndex) => (
+          <div key={rowIndex} className="row">
+            {row.map((cellValue, cellIndex) => {
+              const className = getCellClassName(
+                cellValue,
+                foodCell,
+                foodShouldReverseDirection,
+                snakeCells
+              );
+              return <div key={cellIndex} className={className}></div>;
+            })}
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 
