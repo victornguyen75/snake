@@ -261,11 +261,18 @@ const isOutOfBounds = (coords, board) => {
 };
 
 const getDirectionFromKey = (key) => {
-  if (key === "ArrowUp") return DIRECTION.UP;
-  if (key === "ArrowRight") return DIRECTION.RIGHT;
-  if (key === "ArrowDown") return DIRECTION.DOWN;
-  if (key === "ArrowLeft") return DIRECTION.LEFT;
-  return "";
+  switch (key) {
+    case "ArrowUp":
+      return DIRECTION.UP;
+    case "ArrowRight":
+      return DIRECTION.RIGHT;
+    case "ArrowLeft":
+      return DIRECTION.LEFT;
+    case "ArrowDown":
+      return DIRECTION.DOWN;
+    default:
+      return "";
+  }
 };
 
 const getNextNodeDirection = (node, currentDirection) => {
