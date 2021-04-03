@@ -24,7 +24,7 @@ const Board = () => {
 
   // Set the food 5 cells away from the starting point of the snake
   const [foodCell, setFoodCell] = useState(getFoodCell(snakeCells, 0));
-  const [direction, setDirection] = useState(DIRECTION.RIGHT);
+  const [direction, setDirection] = useState(getRandomDirection());
   const [foodShouldReverseDirection, setFoodShouldReverseDirection] = useState(
     false
   );
@@ -158,7 +158,7 @@ const Board = () => {
     setSnake(new SinglyLinkedList(snakeLLStartingValue));
     setFoodCell(getFoodCell(snakeCells, 0));
     setSnakeCells(new Set([snakeLLStartingValue.cell]));
-    setDirection(DIRECTION.RIGHT);
+    setDirection(getRandomDirection());
   };
 
   return (
@@ -207,6 +207,10 @@ const getStartingSnakeLLValue = (board) => {
     col: startingCol,
     cell: startingCell,
   };
+};
+
+const getRandomDirection = () => {
+  return Object.keys(DIRECTION)[randomIntFromInterval(0, 4)];
 };
 
 /**
