@@ -199,8 +199,8 @@ const createBoard = (BOARD_SIZE) => {
 const getStartingSnakeLLValue = (board) => {
   const rowSize = board.length;
   const colSize = board[0].length;
-  const startingRow = Math.round(rowSize / 3);
-  const startingCol = Math.round(colSize / 3);
+  const startingRow = randomIntFromInterval(0, rowSize - 1);
+  const startingCol = randomIntFromInterval(1, colSize);
   const startingCell = board[startingRow][startingCol];
   return {
     row: startingRow,
