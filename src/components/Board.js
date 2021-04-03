@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { LinkedListNode, SinglyLinkedList } from "./LinkedList";
-import {
-  useInterval,
-  randomIntFromInterval,
-  reverseLinkedList,
-} from "../lib/utils";
+import { randomIntFromInterval, reverseLinkedList } from "../lib/utils";
 import "./Board.css";
 
 const BOARD_SIZE = 10;
@@ -44,12 +40,13 @@ const Board = () => {
       });
   });
 
-  // `useInterval` is needed; you can't naively do `setInterval` in the
-  // `useEffect` above. See the article linked above the `useInterval`
-  // definition for details.
-  useInterval(() => {
-    moveSnake();
-  }, 150);
+  useEffect(() => {
+    const snakeSpeed = setTimeout(() => {
+      moveSnake();
+    }, 150);
+
+    return () => clearTimeout(snakeSpeed);
+  });
 
   const handleKeydown = (e) => {
     const newDirection = getDirectionFromKey(e.key);
